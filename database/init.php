@@ -25,7 +25,7 @@ function check_and_run_install() {
     try {
         // Créer la base de données si elle n'existe pas
         try {
-            $pdo->exec("CREATE DATABASE IF NOT EXISTS `your_database` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+            $pdo->exec("CREATE DATABASE IF NOT EXISTS `". DB_NAME ."` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
         } catch (Exception $e) {
             error_log('Erreur lors de la création de la base de données: ' . $e->getMessage());
             echo 'init.php : erreur lors de la création de la base de données. Il est possible que la base de données existe déjà';
@@ -33,7 +33,7 @@ function check_and_run_install() {
         }
 
         // Se reconnecter à la nouvelle base de données
-        $pdo->exec("USE `your_database`");
+        $pdo->exec("USE `". DB_NAME ."`");
 
         // Liste des tables à vérifier
         $tables = ['cat', 'race', 'family'];

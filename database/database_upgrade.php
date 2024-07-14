@@ -33,7 +33,7 @@ function ab_bd_install() {
         //     $sql = array_filter($sql);
         // }
 
-        echo 'Les tables ont été créées avec succès.';
+        echo 'Choupi ! Les tables ont été créées avec succès.';
         
     } catch (Exception $e) {
         // Gestion des exceptions
@@ -83,7 +83,7 @@ function ab_db_uninstall() {
                 unlink('installed.lock');
         }
         
-        echo "Les tables ont été supprimées avec succès et le fichier de verrouillage a été supprimé.";
+        echo "Choupi ! Les tables ont été supprimées avec succès et le fichier de verrouillage a été supprimé.";
 
     } catch (Exception $e) {
 
