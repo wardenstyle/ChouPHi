@@ -1,2 +1,2 @@
 # ChouPHi
-Chouphi framework pour l'administration de vos bases de données
+Chouphi framework pour l'administration de vos bases de données !
