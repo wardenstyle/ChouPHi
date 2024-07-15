@@ -7,7 +7,6 @@ require_once 'database/database_upgrade.php'; //inclus les fonctions installatio
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
 // Vérification du mot de passe
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['password'])) {
     if ($_POST['password'] === ADMIN_PASSWORD) {
@@ -20,17 +19,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['password'])) {
 // Vérification de la déconnexion
 if (isset($_GET['logout'])) {
     session_destroy();
-    header('Location: ' . $_SERVER['PHP_SELF']);
+    header('Location: '. $_SERVER['PHP_SELF'] );
     exit;
 }
 
 // Vérifier si l'utilisateur est authentifié
 if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] ) {
+
     if (isset($_POST['install'])) {
+
         // Exécuter la vérification et éventuellement l'installation
         check_and_run_install();
+
     } elseif (isset($_POST['uninstall'])) {
+
         ab_db_uninstall();
+
     } elseif (isset($_POST['unlock'])) {
         // Supprimer le fichier de verrouillage
         if (file_exists('installed.lock')) {
@@ -75,12 +79,18 @@ if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] ) {
                         </div>
                     </form>
                     <p>Restitution des données </p>
+
+                    <p>/\_/\ <br />
+                    ( o.o )<br />
+                    > ^ <<br />
+                    </p>
+                    <h4>Restitution des chats</h4>
                     <?php
 
                     try {
                         require_once 'database/database_load.php';
-
-                        // Récupérer les données
+                        
+                        // Récupérer les données directement avec la classe de l'objet 
                         $cats = (new ObjectCat())->get_lines(
 
                         array(
@@ -88,15 +98,59 @@ if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] ) {
                         )
 
                         ));
-                        var_dump($cats);
+
+                        if($cats != null) {
+
+                            foreach ($cats as $cat){
+                                echo $cat->name_cat;
+                            }
+                        }
+
+
+                        global $ab_db;
+                        $tables = $ab_db->tables();
+                        // récupérer les données avec la requête sql par instanciation de la classe DatabaseObject
+                        $sql = "SELECT * FROM {$tables['cat']} AS c
+                        INNER JOIN {$tables['race']} AS r ON c.id_race = r.id_race
+                        INNER JOIN {$tables['family']} AS f ON r.id_family = f.id_family;";
+                        $cats_race= (new DatabaseObject($sql))->get_lines();
+
+                        if($cats_race !=null) {
+
+                            foreach ($cats_race as $cat){
+                                echo 
+                            "
+                            <table style='border 1px solid'>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Poids(kg)</th>
+                                    <th>Couleur</th>
+                                    <th>Race</th>
+                                    <th>Famille</th>
+                                </tr>
+                                <tr>
+                                    <td>$cat->name_cat</td>
+                                    <td>$cat->height</td>
+                                    <td>$cat->color</td>
+                                    <td>$cat->name_race</td>
+                                    <td>$cat->name_family</td>
+                                </tr>
+
+                            </table>
+                            
+                            ";
+                            }
+                            
+
+                        }else{
+                            echo 'aucun chat en base';
+                        }
 
                     } catch (PDOException $e) {
                         error_log("Erreur lors de la restitution des données: " . $e->getMessage());
-                        exit();
+                        echo 'Erreur lors de la restitution des données.';
                       }
-                    ?>
-
-                    
+                    ?>                  
                         
                 </div>
 

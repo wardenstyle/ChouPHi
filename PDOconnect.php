@@ -24,8 +24,7 @@ function get_pdo_connection() {
     } catch (PDOException $e) {
 
         error_log('Erreur de connexion à la base de données: ' . $e->getMessage());
-		header('Location: erreur.php');
-		exit('Erreur : ' . $e->getMessage());
+		exit('Erreur : base bloquée, vous devez la déverouiller ' . $e->getMessage());
     }
 
     return $pdo;
@@ -46,8 +45,8 @@ function get_pdo_connection_1() {
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $pdo;
     } catch (Exception $e) {
-        error_log('Erreur de connexion à la base de données: ' . $e->getMessage());
-        echo 'Une erreur est survenue lors de la connexion à la base de données. Veuillez vérifier les journaux d\'erreurs pour plus de détails.';
+        error_log('Erreur de connexion à la base de données ' . $e->getMessage());
+        echo 'Miaouuu ! Une erreur est survenue lors de la connexion à la base de données. Essayez de dévérouiller la base. Veuillez vérifier les journaux d\'erreurs pour plus de détails.';
         return null;
     }
 }

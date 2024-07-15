@@ -146,6 +146,7 @@ abstract class DatabaseTableObject
     }
 }
 /**
+ * Create all objects from your table here for example Cat, Race, Family
  * Créer les classes de vos objets ici exemple : Cat, Race, Familly
  */
 class ObjectCat extends DatabaseTableObject
@@ -153,7 +154,8 @@ class ObjectCat extends DatabaseTableObject
     protected static function get_table()
     {
         global $ab_db;
-        return $ab_db->cat;
+        $tables = $ab_db->tables();
+        return $tables['cat'];
     }
 }
 
@@ -162,7 +164,8 @@ class ObjectRace extends DatabaseTableObject
     protected static function get_table()
     {
         global $ab_db;
-        return $ab_db->race;
+        $tables = $ab_db->tables();
+        return $tables['race'];
     }
 }
 
@@ -171,7 +174,8 @@ class ObjectFamilly extends DatabaseTableObject
     protected static function get_table()
     {
         global $ab_db;
-        return $ab_db->family;
+        $tables = $ab_db->tables();
+        return $tables['family'];
     }
 }
 

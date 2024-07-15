@@ -36,7 +36,9 @@ function check_and_run_install() {
         $pdo->exec("USE `". DB_NAME ."`");
 
         // Liste des tables à vérifier
-        $tables = ['cat', 'race', 'family'];
+        global $ab_db;
+        $tables = $ab_db->tables();
+        //$tables = ['cat', 'race', 'family'];
         $tables_exist = true;
 
         foreach ($tables as $table) {
