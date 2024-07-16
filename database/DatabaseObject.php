@@ -17,6 +17,9 @@ class DatabaseObject
 {
     private $sql;
 
+    /**
+     * Fonctions de lecture (SELECT) uniquement avec (requête SQL) en argument
+     */
     public function __construct($sql)
     {
         $this->sql = $sql;
@@ -28,15 +31,18 @@ class DatabaseObject
         return $ab_db->get_results($this->sql, $output);
     }
 
+    // si vous voulez retourner un objet
     public function get_lines()
     {
         return $this->custom_get_lines(OBJECT_K);
     }
 
+    // Si vous voulez retourner un tableau
     public function get_lines_array()
     {
         return $this->custom_get_lines(ARRAY_A);
     }
+
 }
 
 /**
@@ -143,6 +149,30 @@ abstract class DatabaseTableObject
         }
 
         return $list;
+    }
+
+    /**
+     * Traitement des insertions (INSERT INTO)
+     */
+    public function add_line($data)
+    {
+        global $ab_db;
+        $table = static::get_table();
+        $fields = $ab_db->fields()[$table]; // Assume this gets the fields definition
+    
+        //Filtrer les données en fonction des champs
+        $filtered_data = array_intersect_key($data, array_filter($fields, function ($var) use ($table) {
+            return !($var['key'] || $var['autoinc'] || !$var['update']);
+        }));
+    
+        // Insérer les données filtrées
+        $res = $ab_db->insert($table, $data); //filtered_data a la place de $data
+    
+        if ($res) {
+            return $res;
+        } else {
+            return false;
+        }
     }
 }
 /**

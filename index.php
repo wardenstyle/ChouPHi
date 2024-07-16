@@ -56,6 +56,14 @@ if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] ) {
         function confirmUnlock() {
             return confirm('Attention ! supprimer le fichier de vérouillage permettra une nouvelle installation dans laquelle vous perdrez toutes les données.');
         }
+        function reloadPage() { 
+            setTimeout(function() {
+                window.location.reload();
+            }, 500);
+            alert('choupi ajouté !')
+        }   
+        
+      
     </script>
 
 
@@ -90,7 +98,7 @@ if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] ) {
                     try {
                         require_once 'database/database_load.php';
                         
-                        // Récupérer les données directement avec la classe de l'objet 
+                        //1 - Récupérer les données directement avec la classe de l'objet 
                         $cats = (new ObjectCat())->get_lines(
 
                         array(
@@ -102,14 +110,13 @@ if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] ) {
                         if($cats != null) {
 
                             foreach ($cats as $cat){
-                                echo $cat->name_cat;
+                                echo $cat->name_cat.'<br />';
                             }
                         }
 
-
                         global $ab_db;
                         $tables = $ab_db->tables();
-                        // récupérer les données avec la requête sql par instanciation de la classe DatabaseObject
+                        //2 - récupérer les données avec la requête sql par instanciation de la classe DatabaseObject
                         $sql = "SELECT * FROM {$tables['cat']} AS c
                         INNER JOIN {$tables['race']} AS r ON c.id_race = r.id_race
                         INNER JOIN {$tables['family']} AS f ON r.id_family = f.id_family;";
@@ -145,14 +152,69 @@ if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] ) {
                         }else{
                             echo 'aucun chat en base';
                         }
+                        
+                        if (isset($_POST['submit'])){
+                            $name = $_POST['name_cat'];
+                            $height = $_POST['height'];
+                            $color = $_POST['color'];
+                            $race = $_POST['race'];
+                            $data = [
+                                'name_cat' => $name,
+                                'height' => $height,
+                                'color' => $color,
+                                'id_race' => $race
+                            ];
+                        // 3- utilisez la classe de l'objet pour une insertion
+                            $new_cat = (new ObjectCat())->add_line($data); // c'est ObjectCat qui est appelé pour une insertion
+                        
+                            if ($new_cat) {
 
+                                echo "Insert successful. Last insert ID: " . $new_cat;
+                                unset($_POST);                        
+                                
+                            } else {
+                                echo "Insert failed.";
+                            }                         
+                        }
+                        
+                        echo "<h4>Ajoutez des chats (pour cet exemple juste le nom sera pris en compte)</h4>
+                        
+                        <form method='POST'>
+                            <label for='nom'>Nom</label>
+                            <input type='text' name='name_cat' placeholder='TOM'></input>
+
+                            <label for='height'>Poids(kg)</label>
+                            <select name='height' id='height'>
+                                <option value='1.5'>1.5</option>
+                                <option value='2'>2</option>
+                                <option value='3.5'>3.5</option>
+                            </select>
+
+                            <label for='color'>Couleur</label>
+                            <select name='color' id='color'>
+                                <option value='Noir'>Noir</option>
+                                <option value='Blanc'>Blanc</option>
+                                <option value='Tachete'>Tâcheté</option>
+                            </select>
+
+                            <label for='race'>Race</label>
+                            <select name='race' id='race'>
+                                <option value='1'>Persan</option>
+                            </select>
+
+                            <input type='submit' name='submit' value='submit' onclick='return reloadPage()'>
+                        </form>
+                        ";
+                        
                     } catch (PDOException $e) {
                         error_log("Erreur lors de la restitution des données: " . $e->getMessage());
                         echo 'Erreur lors de la restitution des données.';
-                      }
+                    }
                     ?>                  
                         
                 </div>
+
+                <div><h4>HtmlChoupinator (à venir)</h4></div>
 
                 <a href="?logout=true">Quitter</a>
 
@@ -173,3 +235,4 @@ if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] ) {
 
 </body>
 </html>
+

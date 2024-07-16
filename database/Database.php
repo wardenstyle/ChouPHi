@@ -18,9 +18,49 @@ class Database {
             $stmt = $pdo->query($query);
             return $stmt->fetchAll(PDO::FETCH_OBJ);
         } catch (Exception $e) {
-            error_log('Erreur dans database: ' . $e->getMessage());
+            error_log('Erreur dans Database:get_results ' . $e->getMessage());
             echo 'Miaouuu ! Une erreur est survenue lors de la lecture des données. Veuillez vérifier les journaux d\'erreurs pour plus de détails.';
         }
+    }
+
+    /**
+     * fonction insert
+     * permet l'insertion des données dans les tables (similaire à la fonction Wordpress)
+     */
+    function insert($table, $filter_data)
+    {
+        $pdo = get_pdo_connection();
+        if ($pdo === null) {
+            return false;
+        }
+    
+        try {
+            // On récupère toutes les clés présentes
+            $columns = array_keys($filter_data);
+            // On construit les préfixes :table1, :table2, :table3
+            $prefix = array_map(function($col) { return ":$col"; }, $columns);
+    
+            // On construit la requête: INSERT INTO your_table (name, email, age) VALUES (:name, :email, :age)
+            $sql = "INSERT INTO $table (" . implode(", ", $columns) . ") VALUES (" . implode(", ", $prefix) . ")";
+            $statement = $pdo->prepare($sql);
+    
+            // On insert
+            foreach ($filter_data as $key => &$value) {
+                $statement->bindParam(":$key", $value);
+            }
+//            var_dump($sql);
+//           var_dump($statement);
+            // On exécute
+            if ($statement->execute()) {
+                return $pdo->lastInsertId();
+            } else {
+                return false;
+            }
+
+         } catch (Exception $e) {
+             error_log('Erreur dans Database:insert() ' . $e->getMessage());
+             echo 'Miaouuu ! Une erreur est survenue lors de l\'insertion des données. Veuillez vérifier les journaux d\'erreurs pour plus de détails.';
+         }
     }
 
     public $prefix = '';
@@ -38,7 +78,9 @@ class Database {
         //$this->set_prefix(""); // si vous ne voulez pas prefixer vos tables
         require_once('database_fields.php');
     }
-
+    /**
+     * fonction pour récuperer et initialiser les tables
+     */
     private function loadConfig() {
         // Lire le fichier de configuration
         $config = include('config_tables.php');
