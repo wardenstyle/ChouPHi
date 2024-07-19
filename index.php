@@ -115,6 +115,7 @@ if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] ) {
                         }
 
                         global $ab_db;
+                        $name=null; $race=null; $height=null; $color = null;
                         $tables = $ab_db->tables();
                         //2 - récupérer les données avec la requête sql par instanciation de la classe DatabaseObject
                         $sql = "SELECT * FROM {$tables['cat']} AS c
@@ -153,11 +154,11 @@ if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] ) {
                             echo 'aucun chat en base';
                         }
                         
-                        if (isset($_POST['submit']) && $_POST){
-                            $name = $_POST['name_cat'];
-                            $height = $_POST['height'];
-                            $color = $_POST['color'];
-                            $race = $_POST['race'];
+                        if (isset($_POST['send']) && $_POST){
+                            if(isset($_POST['name_cat'])) $name = $_POST['name_cat'];  
+                            if(isset($_POST['height']))$height = $_POST['height'];
+                            if(isset($_POST['color']))$color = $_POST['color'];
+                            if(isset($_POST['race']))$race = $_POST['race'];
                             $data = [
                                 'name_cat' => $name,
                                 'height' => $height,
@@ -202,7 +203,7 @@ if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] ) {
                                 <option value='1'>Persan</option>
                             </select>
 
-                            <input type='submit' name='submit' value='submit' onclick='return reloadPage()'>
+                            <input type='submit' name='send' value='submit' onclick='return reloadPage()'>
                         </form>
                         ";
                         
@@ -217,10 +218,23 @@ if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] ) {
                 <div><h4>HtmlChoupinator</h4></div>
 
                 <?php 
+                //var_dump($cats_race);
+                if($cats_race) {
+                    $html_gen =  new HtmlChoupinator();
+                    $html_gen->add_title(array('title' => 'Tableau généré par Chouphi Framework', 'level' => '3'));
+                    $html_gen->add_tab(array(
+                        'columns' => array('CODE', 'Nom', 'Poids', 'Couleur','ID', 'Race','CODE_F', 'Famille'),
+                        'values' => $cats_race            
+	            ));
 
-                $html_gen =  new HtmlChoupinator();
-                $html_gen->add_title(array('title' => 'Titre généré par Chouphi', 'level' => '3'));
                 $html_gen->generate();
+
+                } else {
+                    $html_gen =  new HtmlChoupinator();
+                    $html_gen->add_title(array('title' => 'aucun chat trouvé', 'level' => '4'));
+                    $html_gen->generate();
+                }
+
                 ?>
 
                 <a href="?logout=true">Quitter</a>

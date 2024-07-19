@@ -74,5 +74,76 @@ class HtmlChoupinator {
 		
 		return $r;
 	}
+
+		/**
+		* générer un tableau 
+		*/
+		function add_tab($atts, $add_flush_html = true){
+			$a = $this->shortcode_atts( array(
+				'columns' => array('titre'),
+				'values' =>array(),
+				), $atts );
+				
+			if (is_array($a['columns'])) $colonne = $a['columns']; else $colonne = explode(',', $a['columns']);
+			
+			// Formatage des colonnes
+			foreach ($colonne as $k => $v) {
+			  if (!is_array($v)) $v = array('title' => $v);
+			  $v = array_merge(array(
+				'title' => "",
+				'checkbox' => false,
+				'hidden' => false
+				), $v);
+			  $colonne[$k] = $v;
+			}
+	
+			// Formatage des lignes
+			$rows = array();
+			foreach($a['values'] as $v){
+			  array_push($rows, $v);  
+			}
+			// si vous avez bootstrap vous pouvez indiquer la classe souhaitée
+			$r = '<table class="table table-striped"><thead><tr>'.$this->char_rl;
+			// le th
+			foreach($colonne as $c){
+				$r.= '<th'.($c['hidden'] ? ' style="display:none"' : "").'>'.$c['title'].'</th>'.$this->char_rl;
+			}
+			$r.= '</tr></thead><tbody>'.$this->char_rl;
+			//  tr
+			foreach($rows as $v){
+				$r.= '<tr>';
+				$i = 0;
+					//et les td
+				foreach($v as $k => $value){
+	//~ 				$r.= '<td class="name column-name">'.$value.'</td>'.$this->char_rl;
+					$r.= '<td'.($colonne[$i]['hidden'] ? ' style="display:none"' : "").' class="name column-name">'.$this->char_rl;
+	
+					if ($colonne[$i]['checkbox']) {
+						$r .= $this->add_checkbox(array(
+							'name' => $value,
+							'option' => array(""),
+							), false);
+					} else
+					if (isset($colonne[$i]['callback'])) {
+						$r .= call_user_func($colonne[$i]['callback'], $value);
+					} else
+					{
+						$r .= $value.$this->char_rl;
+					}
+					$r.= '</td>'.$this->char_rl;
+					$i++;
+				}
+				$r.= '</tr>'.$this->char_rl;
+			}
+			$r.= '</tbody></table>';	
+	
+			// Retour chariot pour meilleure lecture html
+			$r .= $this->char_rl;
+			
+			// on concaténe pour le flush
+			if ($add_flush_html) $this->html .= $r;
+			
+			return $r;
+		}
 }
 ?>
