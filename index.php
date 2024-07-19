@@ -153,7 +153,7 @@ if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] ) {
                             echo 'aucun chat en base';
                         }
                         
-                        if (isset($_POST['submit'])){
+                        if (isset($_POST['submit']) && $_POST){
                             $name = $_POST['name_cat'];
                             $height = $_POST['height'];
                             $color = $_POST['color'];
@@ -214,7 +214,14 @@ if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] ) {
                         
                 </div>
 
-                <div><h4>HtmlChoupinator (à venir)</h4></div>
+                <div><h4>HtmlChoupinator</h4></div>
+
+                <?php 
+
+                $html_gen =  new HtmlChoupinator();
+                $html_gen->add_title(array('title' => 'Titre généré par Chouphi', 'level' => '3'));
+                $html_gen->generate();
+                ?>
 
                 <a href="?logout=true">Quitter</a>
 
